@@ -39,15 +39,15 @@ void app_main(void)
 
     gpio_reset_pin(BUZZER);
     gpio_set_direction(BUZZER, GPIO_MODE_OUTPUT);
-    gpio_set_level(BUZZER, 1);
+    gpio_set_level(BUZZER, 0);
 
     gpio_reset_pin(GREEN);
     gpio_set_direction(GREEN, GPIO_MODE_OUTPUT);
-    gpio_set_level(GREEN,1);
+    gpio_set_level(GREEN,0);
 
     gpio_reset_pin(BLUE);
     gpio_set_direction(BLUE, GPIO_MODE_OUTPUT);
-    gpio_set_level(BLUE,1);
+    gpio_set_level(BLUE,0);
 
     bool d_seat, p_seat, d_belt, p_belt, ignit;
     bool green_enabled= false;
@@ -69,12 +69,12 @@ void app_main(void)
              welcome_not_shown = false;
         }
         // Ignition enabled
-        if (d_seat && p_seat && d_belt && p_belt){
-            gpio_set_level(GREEN,0);
+        if (d_seat && p_seat && d_belt && p_belt && !ignition_used ){
+            gpio_set_level(GREEN,1);
             green_enabled = true;
         }
         else {
-            gpio_set_level(GREEN,1);
+            gpio_set_level(GREEN,0);
             green_enabled = false;
         }
 
@@ -82,13 +82,13 @@ void app_main(void)
         if (ignit && !ignition_used){
             ignition_used = true;
             if (green_enabled){
-                gpio_set_level(GREEN,1);
-                gpio_set_level(BLUE,0);
+                gpio_set_level(GREEN,0);
+                gpio_set_level(BLUE,1);
                 printf("Engine started\n");
             }
             else {
                 printf("Ignition inhibited\n");
-                gpio_set_level(BUZZER,0);
+                gpio_set_level(BUZZER, 1);
 
                 if (!d_seat)
                     printf("Driver seat not occupied\n");
@@ -106,4 +106,3 @@ void app_main(void)
 void delay_ms(int t) {
     vTaskDelay(t /portTICK_PERIOD_MS);
 }
-
